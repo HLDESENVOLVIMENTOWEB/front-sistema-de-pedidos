@@ -7,15 +7,17 @@ export const usePedidoStore = defineStore('pedido', () => {
   const totalPedidos = ref(0);
   const page = ref(1);
   const limit = ref(10);
+  const searchTerm = ref('');
   const totalPages = computed(() => Math.ceil(totalPedidos.value / limit.value));
 
-  const fetchPedidos = async (newPage = 1, newLimit = 10) => {
+  const fetchPedidos = async (newPage = 1, newLimit = 10, search = '') => {
     try {
-      const response = await listarPedidos(newPage, newLimit);
+      const response = await listarPedidos(newPage, newLimit, search);
       pedidos.value = response.pedidos;
       totalPedidos.value = response.total;
       page.value = response.page;
       limit.value = newLimit;
+      searchTerm.value = search;
     } catch (error) {
       console.error('Erro ao buscar pedidos:', error);
     }
@@ -23,22 +25,17 @@ export const usePedidoStore = defineStore('pedido', () => {
 
   const addPedido = async (pedido) => {
     await criarPedido(pedido);
-    await fetchPedidos(page.value, limit.value);
+    await fetchPedidos(page.value, limit.value, searchTerm.value);
   };
 
   const updatePedido = async (id, pedido) => {
     await atualizarPedido(id, pedido);
-    await fetchPedidos(page.value, limit.value);
+    await fetchPedidos(page.value, limit.value, searchTerm.value);
   };
 
   const removePedido = async (id) => {
     await deletarPedido(id);
-    await fetchPedidos(page.value, limit.value);
-  };
-
-  const setPage = (newPage: number) => {
-    page.value = newPage;
-    fetchPedidos(newPage, limit.value);
+    await fetchPedidos(page.value, limit.value, searchTerm.value);
   };
 
   return {
@@ -47,10 +44,10 @@ export const usePedidoStore = defineStore('pedido', () => {
     page,
     limit,
     totalPages,
+    searchTerm,
     fetchPedidos,
     addPedido,
     updatePedido,
     removePedido,
-    setPage,
   };
 });

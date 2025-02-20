@@ -1,9 +1,7 @@
-import axios from 'axios';
+import api from './api';
 
-const api = axios.create({ baseURL: 'http://localhost:3001' });
-
-export const listarPedidos = async (page: number, limit: number) => {
-  const { data } = await api.get(`/pedidos?page=${page}&limit=${limit}`);
+export const listarPedidos = async (page: number, limit: number, search = '') => {
+  const { data } = await api.get(`/pedidos?page=${page}&limit=${limit}&search=${search}`);
   return data;
 };
 
@@ -14,7 +12,6 @@ export const criarPedido = async (pedido: { id_cliente: number; itens: { id_prod
 
 export const atualizarPedido = async (id: number, pedido: { id_cliente: number; itens: { id_produto: number; qtde: number; preco: number }[] }) => {
   const { data } = await api.put(`/pedidos/${id}`, pedido);
-
   return data;
 };
 

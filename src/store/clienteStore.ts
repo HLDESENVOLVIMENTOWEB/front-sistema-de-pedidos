@@ -9,9 +9,9 @@ export const useClienteStore = defineStore('cliente', () => {
   const limit = ref(10);
   const totalPages = computed(() => Math.ceil(totalClientes.value / limit.value));
 
-  const fetchClientes = async (newPage = 1, newLimit = 10) => {
+  const fetchClientes = async (newPage = 1, newLimit = 10, searchTerm = '') => {
     try {
-      const response = await listarClientes(newPage, newLimit);
+      const response = await listarClientes(newPage, newLimit, searchTerm);
       clientes.value = response.clientes;
       totalClientes.value = response.total;
       page.value = response.page;
@@ -36,11 +36,6 @@ export const useClienteStore = defineStore('cliente', () => {
     await fetchClientes(page.value, limit.value);
   };
 
-  const setPage = (newPage: number) => {
-    page.value = newPage;
-    fetchClientes(newPage, limit.value);
-  };
-
   return {
     clientes,
     totalClientes,
@@ -51,6 +46,5 @@ export const useClienteStore = defineStore('cliente', () => {
     addCliente,
     updateCliente,
     removeCliente,
-    setPage
   };
 });

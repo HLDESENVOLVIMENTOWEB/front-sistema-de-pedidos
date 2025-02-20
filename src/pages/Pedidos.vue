@@ -1,11 +1,27 @@
 <template>
   <v-container>
     <v-row align="center" justify="space-between" class="mb-4">
+      <v-text-field
+        v-model="search"
+        label="Filtrar por Cliente"
+        prepend-icon="mdi-magnify"
+        clearable
+        dense
+        @keyup.enter="filtrarPedidos"
+        class="mr-2"
+      ></v-text-field>
+
+      <v-btn color="primary" @click="filtrarPedidos" prepend-icon="mdi-magnify" class="mr-2">
+        Buscar
+      </v-btn>
+
       <v-spacer></v-spacer>
+
       <v-btn color="primary" prepend-icon="mdi-plus" @click="novoPedido">
         Adicionar Pedido
       </v-btn>
     </v-row>
+
 
     <v-dialog v-model="dialog" max-width="500">
       <PedidoForm :pedidoEdicao="pedidoEditando" @save="handleSave" @close="dialog = false" />
@@ -15,7 +31,7 @@
       <v-table dense>
         <thead>
           <tr>
-            <th>ID do Cliente</th>
+            <th>Nome do Cliente</th>
             <th>Itens</th>
             <th class="text-center">Ações</th>
           </tr>
@@ -26,7 +42,7 @@
             <td>
               <ul>
                 <li v-for="item in pedido.itens" :key="item.id_produto">
-                  {{ item.qtde }}x Produto {{ item.nome_produto }} - R$ {{ item.preco }}
+                  {{ item.qtde }}x {{ item.nome_produto }} - R$ {{ item.preco }}
                 </li>
               </ul>
             </td>
@@ -48,27 +64,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { usePedidoStore } from '../store/pedidoStore';
 import PedidoForm from '../components/PedidoForm.vue';
 
 const store = usePedidoStore();
 const dialog = ref(false);
+const search = ref('');
 const pedidos = computed(() => store.pedidos);
 const totalPages = computed(() => store.totalPages);
 const page = computed(() => store.page);
 
 const pedidoEditando = ref(null);
 
-watch(dialog, (newValue) => {
-  if (newValue === true && !pedidoEditando.value) {
-    pedidoEditando.value = { id_cliente: null, itens: [] };
-  }
-});
-
 onMounted(() => {
   store.fetchPedidos();
 });
+
+const filtrarPedidos = () => {
+  store.fetchPedidos(1, 10, search.value);
+};
 
 const handleSave = async (pedido) => {
   if (pedido.id_pedido) {
@@ -76,8 +91,7 @@ const handleSave = async (pedido) => {
   } else {
     await store.addPedido(pedido);
   }
-
-  pedidoEditando.value = null;
+  filtrarPedidos();
   dialog.value = false;
 };
 
@@ -93,9 +107,11 @@ const editarPedido = (pedido) => {
 
 const removerPedido = async (id: number) => {
   await store.removePedido(id);
+  filtrarPedidos();
 };
 
 const setPage = (newPage: number) => {
-  store.setPage(newPage);
+  store.fetchPedidos(newPage, 10, search.value);
 };
+
 </script>
