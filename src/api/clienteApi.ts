@@ -1,9 +1,8 @@
-import axios from 'axios';
+import api from './api';
 
-const api = axios.create({ baseURL: 'http://localhost:3001' });
 
-export const listarClientes = async (page: number, limit: number) => {
-  const { data } = await api.get(`/clientes?page=${page}&limit=${limit}`);
+export const listarClientes = async (page: number, limit: number, searchTerm = '') => {
+  const { data } = await api.get(`/clientes?page=${page}&limit=${limit}&search=${searchTerm}`);
   return data;
 };
 

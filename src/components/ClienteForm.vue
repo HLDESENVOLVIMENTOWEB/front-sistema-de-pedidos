@@ -46,7 +46,7 @@
 import { ref, watch, computed } from 'vue';
 
 const props = defineProps({
-  cliente: Object, // Cliente para edição (opcional)
+  cliente: Object,
 });
 
 const emit = defineEmits(['save', 'close']);

@@ -1,11 +1,27 @@
 <template>
   <v-container>
-    <v-row align="center" justify="space-between" class="mb-4">
+    <v-row align="center" justify="start" class="mb-4">
+      <v-text-field
+        v-model="search"
+        label="Filtrar por nome"
+        prepend-icon="mdi-magnify"
+        clearable
+        dense
+        @keyup.enter="filtrarProdutos"
+        class="mr-4"
+      ></v-text-field>
+
+      <v-btn color="primary" @click="filtrarProdutos" prepend-icon="mdi-magnify" class="mr-4">
+        Buscar
+      </v-btn>
+
       <v-spacer></v-spacer>
+
       <v-btn color="primary" prepend-icon="mdi-plus" @click="dialog = true">
         Adicionar Produto
       </v-btn>
     </v-row>
+
 
     <v-dialog v-model="dialog" max-width="500">
       <ProdutoForm :produtoEdicao="produtoEditando" @save="handleSave" @close="dialog = false" />
@@ -48,15 +64,25 @@ import ProdutoForm from '../components/ProdutoForm.vue';
 
 const store = useProdutoStore();
 const dialog = ref(false);
+const search = ref('');
+const produtoEditando = ref(null);
+
 const produtos = computed(() => store.produtos);
 const totalPages = computed(() => store.totalPages);
 const page = computed(() => store.page);
 
-const produtoEditando = ref(null);
-
 onMounted(() => {
   store.fetchProdutos();
 });
+
+const filtrarProdutos = () => {
+  store.fetchProdutos(1, 10, search.value);
+};
+
+const abrirCadastro = () => {
+  produtoEditando.value = null;
+  dialog.value = true;
+};
 
 const handleSave = async (produto) => {
   if (produto.id_produto) {
@@ -64,8 +90,7 @@ const handleSave = async (produto) => {
   } else {
     await store.addProduto(produto);
   }
-
-  produtoEditando.value = null;
+  filtrarProdutos();
   dialog.value = false;
 };
 
@@ -74,11 +99,12 @@ const editarProduto = (produto) => {
   dialog.value = true;
 };
 
-const removerProduto = (id: number) => {
-  store.removeProduto(id);
+const removerProduto = async (id: number) => {
+  await store.removeProduto(id);
+  filtrarProdutos();
 };
 
 const setPage = (newPage: number) => {
-  store.setPage(newPage);
+  store.fetchProdutos(newPage, 10, search.value);
 };
 </script>
