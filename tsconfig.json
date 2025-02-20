@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "jsx": "preserve",
+    "types": ["vite/client", "vite-plugin-vuetify"]
+  }
+}
