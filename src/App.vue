@@ -1,6 +1,5 @@
 <template>
   <v-app>
-    <!-- Barra de Navegação -->
     <v-app-bar app color="primary" dark>
       <v-btn icon @click="drawer = !drawer">
         <v-icon class="mdi mdi-menu"></v-icon>
@@ -9,7 +8,6 @@
     </v-app-bar>
 
 
-    <!-- Sidebar -->
     <v-navigation-drawer v-model="drawer" app>
       <v-list dense>
         <v-list-item-group>
@@ -32,7 +30,6 @@
     </v-navigation-drawer>
 
 
-    <!-- Conteúdo Principal -->
     <v-main>
       <v-container class="mt-5">
         <router-view></router-view>

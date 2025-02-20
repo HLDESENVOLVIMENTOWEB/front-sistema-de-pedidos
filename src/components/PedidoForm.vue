@@ -7,7 +7,6 @@
     <v-card-text>
       <v-form @submit.prevent="handleSubmit">
         <v-container>
-          <!-- Seleção do Cliente -->
           <v-row>
             <v-col cols="12">
               <v-select
@@ -46,7 +45,6 @@
 
           <v-divider class="my-4"></v-divider>
 
-          <!-- Lista de Itens do Pedido -->
           <v-row v-for="(item, index) in pedido.itens" :key="index" class="align-center">
             <v-col cols="7">
               <v-select

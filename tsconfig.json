@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
     "moduleResolution": "node",
-    "allowJs": true,
-    "esModuleInterop": true,
-    "jsx": "preserve",
-    "types": ["vite/client", "vite-plugin-vuetify"]
+    "strict": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
   }
 }

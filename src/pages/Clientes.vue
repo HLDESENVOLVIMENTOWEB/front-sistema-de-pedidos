@@ -1,11 +1,27 @@
 <template>
   <v-container>
-    <v-row align="center" justify="space-between" class="mb-4">
+    <v-row align="center" justify="start" class="mb-4">
+      <v-text-field
+        v-model="search"
+        label="Filtrar por nome"
+        prepend-icon="mdi-magnify"
+        clearable
+        dense
+        @keyup.enter="filtrarClientes"
+        class="mr-4"
+      ></v-text-field>
+
+      <v-btn color="primary" @click="filtrarClientes" prepend-icon="mdi-magnify" class="mr-4">
+        Buscar
+      </v-btn>
+
       <v-spacer></v-spacer>
-      <v-btn color="primary" @click="dialog = true" prepend-icon="mdi-plus">
+
+      <v-btn color="primary" @click="abrirCadastro" prepend-icon="mdi-plus">
         Adicionar Cliente
       </v-btn>
     </v-row>
+
 
     <v-dialog v-model="dialog" max-width="500">
       <ClienteForm :cliente="clienteEditando" @save="handleSave" @close="dialog = false" />
@@ -21,7 +37,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="cliente in clientes" :key="cliente.id_cliente || cliente.email">
+          <tr v-for="cliente in clientes" :key="cliente.id_cliente">
             <td>{{ cliente.nome }}</td>
             <td>{{ cliente.email }}</td>
             <td class="text-center">
@@ -48,23 +64,37 @@ import ClienteForm from '../components/ClienteForm.vue';
 
 const store = useClienteStore();
 const dialog = ref(false);
+const search = ref('');
+const clienteEditando = ref(null);
+
 const clientes = computed(() => store.clientes);
 const totalPages = computed(() => store.totalPages);
 const page = computed(() => store.page);
-const clienteEditando = ref(null);
 
+// Buscar clientes ao carregar o componente
 onMounted(() => {
   store.fetchClientes();
 });
 
+// Filtrar clientes chamando a API
+const filtrarClientes = () => {
+  store.fetchClientes(1, 10, search.value);
+};
+
+// Função para abrir modal de cadastro
+const abrirCadastro = () => {
+  clienteEditando.value = null;
+  dialog.value = true;
+};
+
+// Manipulação de clientes
 const handleSave = async (cliente) => {
   if (cliente.id_cliente) {
     await store.updateCliente(cliente.id_cliente, cliente);
   } else {
     await store.addCliente(cliente);
   }
-
-  clienteEditando.value = null;
+  filtrarClientes();
   dialog.value = false;
 };
 
@@ -73,11 +103,12 @@ const editarCliente = (cliente) => {
   dialog.value = true;
 };
 
-const removerCliente = (id: number) => {
-  store.removeCliente(id);
+const removerCliente = async (id: number) => {
+  await store.removeCliente(id);
+  filtrarClientes();
 };
 
 const setPage = (newPage: number) => {
-  store.setPage(newPage);
+  store.fetchClientes(newPage, 10, search.value);
 };
 </script>

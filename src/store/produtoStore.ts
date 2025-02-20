@@ -9,9 +9,9 @@ export const useProdutoStore = defineStore('produto', () => {
   const limit = ref(10);
   const totalPages = computed(() => Math.ceil(totalProdutos.value / limit.value));
 
-  const fetchProdutos = async (newPage = 1, newLimit = 10) => {
+  const fetchProdutos = async (newPage = 1, newLimit = 10, searchTerm = '') => {
     try {
-      const response = await listarProdutos(newPage, newLimit);
+      const response = await listarProdutos(newPage, newLimit, searchTerm);
       produtos.value = response.produtos;
       totalProdutos.value = response.total;
       page.value = response.page;
@@ -36,11 +36,6 @@ export const useProdutoStore = defineStore('produto', () => {
     await fetchProdutos(page.value, limit.value);
   };
 
-  const setPage = (newPage: number) => {
-    page.value = newPage;
-    fetchProdutos(newPage, limit.value);
-  };
-
   return {
     produtos,
     totalProdutos,
@@ -51,6 +46,5 @@ export const useProdutoStore = defineStore('produto', () => {
     addProduto,
     updateProduto,
     removeProduto,
-    setPage
   };
 });
